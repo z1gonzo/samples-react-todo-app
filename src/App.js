@@ -1,16 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 
-function Welcome(props) {
-  return <h1>Hello, {props.name}</h1>;
-}
-
-class Welcome2 extends React.Component {
-  render() {
-    return <h1>Hello2, {this.props.name}</h1>;
-  }
-}
-
 class App extends Component {
   constructor() {
     super();
@@ -20,12 +10,14 @@ class App extends Component {
       todos: [{
         title: "Learn React",
         done: false
+      }, {
+        title: "Learn JSX",
+        done: false
       }]
     }
   }
 
   newTodoChanged(event) {
-    // console.log(event.target.value)
     this.setState({
       newTodo: event.target.value
     })
@@ -33,7 +25,7 @@ class App extends Component {
 
   formSubmitted(event) {
     event.preventDefault();
-    console.log(this.state.newTodo)
+    
     this.setState({
       newTodo: "",
       todos: [...this.state.todos, {
@@ -43,11 +35,43 @@ class App extends Component {
     })
   }
 
+  toggleTodoDone = (event, index) => {
+    const todos = [...this.state.todos]; // copy array
+    todos[index] = {
+      ...todos[index],
+      done: event.target.checked // update done property on copied todo
+    }; 
+    this.setState({
+      todos
+    })
+};
+
+  removeTodo = (index) => {
+    const todos = [...this.state.todos];
+    todos.splice(index, 1);
+    
+    this.setState({
+      todos
+    })
+  }
+
+  allDone = () => {
+    const todos = this.state.todos.map(todo => {
+      return {
+        title: todo.title,
+        done: true
+      }
+    });
+
+    this.setState({
+      todos
+    })
+  }
+
+
   render() {
     return (
       <div className="App">
-        {/* <Welcome name="Functional component"/> */}
-        {/* <Welcome2 name="Class Component"/> */}
         <h1>{this.state.message}</h1>
         <form onSubmit={(event) => this.formSubmitted(event)}>
           <label htmlFor="newTodo">New Todo</label>
@@ -58,9 +82,15 @@ class App extends Component {
             value={this.state.newTodo}/>
           <button type="submit">Add new Todo</button>
         </form>
+        <button onClick={() => {this.allDone()}}>All done</button>
         <ul>
-          {this.state.todos.map(todo => {
-            return <li key={todo.title}>{todo.title}</li>
+          {this.state.todos.map((todo, index) => {
+            return (
+              <li key={todo.title}>
+              <input onChange={(event) => this.toggleTodoDone(event, index)} type="checkbox" checked={todo.done}/>
+              <span style={{textDecoration: todo.done ? 'line-through' : 'inherit'}}>{todo.title}</span>
+              <button onClick={() => {this.removeTodo(index)}}>Remove</button>
+              </li>)
           })}
         </ul>
       </div>
