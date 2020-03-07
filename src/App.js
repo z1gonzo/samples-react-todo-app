@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import NewTodoForm from './NewTodoForm'
+import TodoList from './TodoList'
 import './App.css';
 
 class App extends Component {
@@ -73,26 +75,17 @@ class App extends Component {
     return (
       <div className="App">
         <h1>{this.state.message}</h1>
-        <form onSubmit={(event) => this.formSubmitted(event)}>
-          <label htmlFor="newTodo">New Todo</label>
-          <input 
-            onChange={(event) => this.newTodoChanged(event)} 
-            id="newTodo" 
-            name="newTodo" 
-            value={this.state.newTodo}/>
-          <button type="submit">Add new Todo</button>
-        </form>
+        <NewTodoForm 
+          newTodo={this.state.newTodo}
+          formSubmitted={this.formSubmitted.bind(this)}
+          newTodoChanged={this.newTodoChanged.bind(this)}
+          />
         <button onClick={() => {this.allDone()}}>All done</button>
-        <ul>
-          {this.state.todos.map((todo, index) => {
-            return (
-              <li key={todo.title}>
-              <input onChange={(event) => this.toggleTodoDone(event, index)} type="checkbox" checked={todo.done}/>
-              <span style={{textDecoration: todo.done ? 'line-through' : 'inherit'}}>{todo.title}</span>
-              <button onClick={() => {this.removeTodo(index)}}>Remove</button>
-              </li>)
-          })}
-        </ul>
+        <TodoList 
+          todos={this.state.todos}
+          toggleTodoDone={this.toggleTodoDone.bind(this)}
+          removeTodo={this.removeTodo.bind(this)}
+          />
       </div>
     );
   }
