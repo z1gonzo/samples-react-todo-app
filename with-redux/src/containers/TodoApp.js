@@ -1,21 +1,14 @@
 import React, { Component } from 'react';
-import NewTodoForm from './NewTodoForm';
-import TodoList from './TodoList';
+import { connect } from 'react-redux';
+
+import { actions } from '../store'
+
+import NewTodoForm from '../components/NewTodoForm';
+import TodoList from '../components/TodoList';
 
 class TodoApp extends Component {
   constructor() {
     super();
-    this.state = {
-      message: 'Hello Coding Garden!!',
-      newTodo: '',
-      todos: [{
-        title: 'Learn React',
-        done: false
-      }, {
-        title: 'Learn JSX',
-        done: false
-      }]
-    };
   }
 
   newTodoChanged(event) {
@@ -72,14 +65,14 @@ class TodoApp extends Component {
   render() {
     return (
       <div className="App">
-        <h3>{this.state.message}</h3>
+        <h3>{this.props.message}</h3>
         <NewTodoForm
-            newTodo={this.state.newTodo}
+            newTodo={this.props.newTodo}
             formSubmitted={this.formSubmitted.bind(this)}
             newTodoChanged={this.newTodoChanged.bind(this)} />
         <button onClick={() => this.allDone()}>All Done</button>
         <TodoList
-          todos={this.state.todos}
+          todos={this.props.todos}
           toggleTodoDone={this.toggleTodoDone.bind(this)}
           removeTodo={this.removeTodo.bind(this)}/>
       </div>
@@ -87,4 +80,20 @@ class TodoApp extends Component {
   }
 }
 
-export default TodoApp;
+function mapStateToProps(state) {
+  return {
+    message: state.message,
+    newTodo: state.newTodo,
+    todos: state.todos
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    onNewTodoChanged(newTodo) {
+      dispatch(actions.newTodoChanged(newTodo))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoApp);
