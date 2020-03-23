@@ -1,90 +1,71 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import NewTodoForm from './NewTodoForm';
 import TodoList from './TodoList';
 
-class TodoApp extends Component {
-  constructor() {
-    super();
-    this.state = {
-      message: 'Hello Coding Garden!!',
-      newTodo: '',
-      todos: [{
-        title: 'Learn React',
-        done: false
-      }, {
-        title: 'Learn JSX',
-        done: false
-      }]
-    };
+
+
+
+const TodoApp = (props) => {
+  const message = 'Hello from Hooks';
+  const [newTodo, setNewTodo] = useState('');
+  const [todos, setTodos] = useState([{
+    title: 'Siema',
+    done: true
+  }, {
+    title: 'Witam',
+    done: false
+  }]);
+
+const newTodoChanged = (e) => {
+  setNewTodo(e.target.value)
   }
 
-  newTodoChanged(event) {
-    this.setState({
-      newTodo: event.target.value
-    });
+const formSubmitted = (e) => {
+    e.preventDefault();
+    setTodos([...todos, {
+      title: newTodo,
+      done: false
+    }])
+    setNewTodo('');
   }
 
-  formSubmitted(event) {
-    event.preventDefault();
+const removeTodo = (index) => {
+  const newTodos = [...todos]; // nie mogę zdefiniować nowego todos i jest newTodos
+    newTodos.splice(index, 1);
+  setTodos(newTodos);
+}
 
-    this.setState({
-      newTodo: '',
-      todos: [...this.state.todos, {
-        title: this.state.newTodo,
-        done: false
-      }]
-    });
-  }
+const toggleTodoDone = (event, index) => {
+  const newTodos = [...todos];
+  newTodos[index] = { ...newTodos[index], done: event.target.checked };
+  setTodos(newTodos);
+}
 
-  toggleTodoDone(event, index) {
-    const todos = [...this.state.todos]; // copy the array
-    todos[index] = {
-      ...todos[index],
-      done: event.target.checked // update done property on copied todo
-    }; // copy the todo can also use Object.assign
-    this.setState({
-      todos
-    });
-  }
+const allDone = () => {
+  const newTodos = todos
+  .map(todo => { return {
+      title: todo.title,
+      done: true }
+    })
+  setTodos(newTodos);
+}
 
-  removeTodo(index) {
-    const todos = [...this.state.todos]; // copy the array
-    todos.splice(index, 1);
-
-    this.setState({
-      todos
-    });
-  }
-
-  allDone() {
-    const todos = this.state.todos.map(todo => {
-      return {
-        title: todo.title, // can also do ...todo
-        done: true
-      };
-    });
-
-    this.setState({
-      todos
-    });
-  }
-
-  render() {
-    return (
-      <div className="App">
-        <h3>{this.state.message}</h3>
-        <NewTodoForm
-            newTodo={this.state.newTodo}
-            formSubmitted={this.formSubmitted.bind(this)}
-            newTodoChanged={this.newTodoChanged.bind(this)} />
-        <button onClick={() => this.allDone()}>All Done</button>
-        <TodoList
-          todos={this.state.todos}
-          toggleTodoDone={this.toggleTodoDone.bind(this)}
-          removeTodo={this.removeTodo.bind(this)}/>
-      </div>
-    );
-  }
+  return (
+    <div className="App">
+      <h3>{message}</h3>
+      <NewTodoForm
+          newTodo={newTodo}
+          formSubmitted={formSubmitted.bind(this)}
+          newTodoChanged={newTodoChanged.bind(this)} 
+          />
+      <button onClick={() => allDone()}>All Done</button>
+      <TodoList
+        todos={todos}
+        toggleTodoDone={toggleTodoDone.bind(this)}
+        removeTodo={removeTodo.bind(this)}
+        />
+    </div>
+  );
 }
 
 export default TodoApp;
